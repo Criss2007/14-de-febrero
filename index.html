@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Ti - San Valentín</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Pacifico&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- PANTALLA 1: EL SOBRE -->
+    <div class="envelope-container" id="envelopeScreen">
+        <div class="envelope-wrapper">
+            <div class="envelope">
+                <div class="front flap"></div>
+                <div class="front pocket"></div>
+                <div class="letter">
+                    <div class="text">
+                        <strong> De:</strong> Cristofer<br>
+                        <strong>Para:</strong> Esencia Ardiente
+                    </div>
+                </div>
+                <div class="hearts">
+                    <div class="heart a1"></div>
+                    <div class="heart a2"></div>
+                    <div class="heart a3"></div>
+                </div>
+            </div>
+        </div>
+        <button id="openBtn" class="open-btn">¡Toca para abrir! 💌</button>
+    </div>
+
+    <!-- PANTALLA 2: LA CARTA FINAL -->
+    <div class="letter-container hidden" id="letterScreen">
+        <div class="paper">
+            <h1 class="title">Feliz San Valentín</h1>
+            <div class="heart-decoration">❤️</div>
+            
+            <p class="subtitle-bold">Chicas y chicos, familia, Esencia Ardiente</p>
+            
+            <!-- AQUÍ ESTÁ EL CAMBIO PARA QUE EL TEXTO ENVUELVA LA FOTO -->
+            <div class="content-wrapper">
+                
+                <!-- 1. LA IMAGEN (Debe ir PRIMERO en el código para que flote) -->
+                <div class="floating-img-wrapper">
+                    <p class="img-caption">Un recuerdo inolvidable ✨</p>
+                    <div class="photo-frame">
+                        <!-- Asegúrate que la imagen "esencia.jpeg" esté en la carpeta -->
+                        <img src="esencia.jpeg" alt="Nuestra Foto" class="my-photo">
+                        <p class="esencia">Esencia Ardiente</p>
+                    </div>
+                </div>
+
+                <!-- 2. EL TEXTO (Fluirá alrededor de la imagen) -->
+                <div class="body-text-flow">
+                    <p>Hoy 14 de febrero , la agrupación se viste de gala , flores , rosas , este dia no se trata solamente amor de parejas , 
+                      sino como amor de equipo, amistad y confidelidad hacia nuestra agrupacion , 
+                      compañeras , compañeros amig@s equipo. hoy quiero felicitar a cada uno de ustedes en esta fecha del amor y 
+                      la amistad en la compartimos ,
+                       algo más que agrupación y/o como integrantes.
+                     </p>
+                    
+                    <p>Compartimos risas, juegos bromas , pasos , ayudas , aprendizajes y caidas , levantamientos que surgimos en cada ensayo, hoy 14
+                      de febrero  compartimos nuestra alegria ,nuestro compromiso , de lograr nuestro objetivo , como agrupación
+                      mantenernos unidos , en cada momento.
+
+                    </p> 
+                    
+                    <p>Gracias por ser mi compañía, mi confidente, mi familia nuestra familia , y celebremos juntos este 14 de febrero 
+                      junto a la virgen de la candelaria
+                    </p>
+                </div>
+
+                <!-- Limpiador de espacios -->
+                <div style="clear: both;"></div>
+            </div>
+            <!-- FIN DEL CONTENEDOR -->
+
+            <p class="footer-text">Esencia Ardiente es de lo que las palabras pueden expresar.</p>
+            <div class="heart-decoration">🌹</div>
+            <button id="goBackBtn" class="back-btn">⬅ Volver a cerrar el sobre</button>
+        </div>
+        
+        <div class="floating-hearts" id="bgHearts"></div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="cancion.mp3" type="audio/mp3">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
