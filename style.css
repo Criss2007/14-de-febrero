@@ -163,6 +163,7 @@ body {
 
 .paper {
     background: rgba(255, 255, 255, 0.95);
+    border: 2px dashed rosa;
     width: 100%;
     max-width: 650px; /* Un poco más ancho para que quepa bien */
     padding: 40px;
