@@ -4,30 +4,43 @@
     --secondary: #ffc0cb;
     --dark-red: #d32f2f;
     --text-color: #4a4a4a;
-    --bg-color: #fad0c4;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     height: 100vh;
     width: 100%;
-    background-image: linear-gradient(to top, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+    /* Fondo temporal por si el video tarda en cargar */
+    background: #000; 
     font-family: 'Poppins', sans-serif;
     overflow: hidden; 
 }
 
-/* --- ESTILOS DEL SOBRE (PANTALLA 1) --- */
+/* --- VIDEO DE FONDO (CRUCIAL) --- */
+.video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1; /* SIEMPRE ATRÁS */
+}
+
+/* --- PANTALLA 1: EL SOBRE --- */
 .envelope-container {
     height: 100vh;
+    width: 100%;
+    background-image: linear-gradient(to top, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); /* Fondo solo para el sobre */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 50; /* Por encima del video */
     transition: opacity 1s ease;
 }
 
@@ -93,10 +106,9 @@ body {
     top: 5%;
     left: 5%;
     border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(240, 16, 16, 0.1);
     z-index: 3;
     border: red 5px dashed;
-    top: 10px; left: 10px; right: 200px; bottom: 10px;
     transition: transform 0.6s ease-in-out;
     display: flex;
     justify-content: center;
@@ -104,7 +116,11 @@ body {
     text-align: center;
 }
 
-
+.text {
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    color: #000;
+}
 
 .flap::after {
     content: '❤';
@@ -116,15 +132,8 @@ body {
     text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
-.open .flap {
-    transform: rotateX(180deg);
-    z-index: 1; 
-}
-
-.open .letter {
-    transform: translateY(-100px); 
-    z-index: 7; 
-}
+.open .flap { transform: rotateX(180deg); z-index: 1; }
+.open .letter { transform: translateY(-100px); z-index: 7; }
 
 .open-btn {
     margin-top: 50px;
@@ -137,17 +146,11 @@ body {
     cursor: pointer;
     box-shadow: 0 5px 15px rgba(211, 47, 47, 0.4);
     font-family: 'Poppins', sans-serif;
-    transition: transform 0.2s, box-shadow 0.2s;
     z-index: 10;
 }
 
-.open-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(211, 47, 47, 0.6);
-}
-
-/* --- PANTALLA 2: LA CARTA COMPLETA --- */
-.hidden { display: none; }
+/* --- PANTALLA 2: LA CARTA --- */
+.hidden { display: none !important; }
 
 .letter-container {
     height: 100vh;
@@ -158,24 +161,30 @@ body {
     padding: 20px;
     overflow-y: auto;
     position: relative;
-    z-index: 20;
+    z-index: 10; /* Encima del video */
     opacity: 0;
-    animation: fadeIn 2s forwards;
+    transition: opacity 1s ease-in; /* Transición suave */
+}
+
+/* Cuando JS agregue esta clase, la carta aparecerá */
+.letter-container.show {
+    opacity: 1;
 }
 
 .paper {
-    background: rgba(255, 255, 255, 0.95);
-    border: 2px dashed rosa;
+    /* FONDO BLANCO SEMITRANSPARENTE PARA QUE SE VEA EL VIDEO DETRÁS */
+    background: rgba(255, 255, 255, 0.85); 
     width: 100%;
-    max-width: 650px; /* Un poco más ancho para que quepa bien */
+    max-width: 650px;
     padding: 40px;
     border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     text-align: center;
     position: relative;
     border: 2px solid #ffc0cb;
     margin-top: 20px;
     margin-bottom: 50px;
+    backdrop-filter: blur(2px); /* Efecto vidrio opcional */
 }
 
 .paper::before {
@@ -187,6 +196,7 @@ body {
     pointer-events: none;
 }
 
+/* ESTILOS DE TEXTO */
 .title {
     font-family: 'Pacifico', cursive;
     font-size: 2.5rem;
@@ -203,160 +213,124 @@ body {
     font-style: italic;
 }
 
-.footer-text {
-    font-family: 'Pacifico', cursive;
-    color: #e91e63;
-    margin-top: 30px;
-    font-size: 1.2rem;
-}
-.letter .text strong {
-    font-family: 'Poppins', sans-serif; /* Fuente más legible */
-    font-size: 1rem;   /* Tamaño un poco más chico para las etiquetas */
-    color: #ff0000;    /* COLOR NEGRO para De y Para */
-    font-weight: 600;
-    margin-right: 5px;
-}
-
-.letter .text {
-    font-family:Georgia, 'Times New Roman', Times, serif;
-    font-size: 1.2rem;
-    color: #000000;
-}
-
-@keyframes fadeIn { to { opacity: 1; } }
-
-.floating-hearts {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: -1;
-}
-
-/* --- ESTILOS TEXTO FLUIDO (EL ARREGLO) --- */
-
 .content-wrapper {
     text-align: left;
     display: block;
+    position: relative;
 }
 
-/* La imagen flotando a la derecha */
+/* CONTENEDOR DE LA IMAGEN FLOTANTE */
 .floating-img-wrapper {
-    float: right; /* Esto hace la magia */
-    margin-left: 20px; /* Espacio a la izquierda de la foto */
-    margin-bottom: 15px; /* Espacio abajo de la foto */
-    width: 260px; /* Ancho fijo para la foto */
+    float: right; /* Flota a la derecha */
+    margin-left: 25px;
+    margin-bottom: 15px;
+    width: 280px; /* Un poquito más grande */
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative; 
-    z-index: 10;
+    z-index: 100; /* ¡IMPORTANTE! Esto asegura que la foto esté ENCIMA y reaccione al toque */
 }
 
-/* El texto fluyendo */
-.body-text-flow {
-    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    font-size: 0.90rem;
-    line-height: 1.6;
-    color: #333;
-    text-align: justify; /* Importante para que se vea cuadrado */
-    display: inline;
-}
-
-.body-text-flow p {
-    margin-bottom: 15px;
-}
-
-.img-caption {
-    font-family: 'Pacifico', cursive;
-    color: #d32f2f;
-    margin-bottom: 8px;
-    font-size: 1.1rem;
-    transform: rotate(-2deg);
-}
-
+/* EL MARCO DE LA FOTO (La parte negra) */
 .photo-frame {
-    background-color: rgb(0, 0, 0);
-    padding: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    transform: rotate(3deg);
-    transition: transform 0.3s ease;
+    background-color: #000;
+    padding: 12px; /* Marco un poco más grueso */
+    /* Sombra inicial suave */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    
+    /* Estado inicial: Rotado */
+    transform: rotate(4deg);
+    
+    /* Animación suave tipo rebote */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
     width: 100%;
+    cursor: pointer; /* Muestra la manito para indicar que se puede tocar */
 }
 
+/* --- EL MOVIMIENTO AL TOCAR O PASAR EL MOUSE --- */
 .photo-frame:hover {
-    transform: scale(1.05) rotate(0deg);
+    /* Se endereza (0deg), crece un poco (scale 1.05) y sube (-5px) */
+    transform: scale(1.05) rotate(0deg) translateY(-5px);
+    
+    /* La sombra se hace más intensa para dar efecto 3D */
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+    
+    /* Cambiamos el borde a rosa intenso al tocar */
+    background-color: #1a1a1a;
 }
 
 .my-photo {
     width: 100%;
     height: auto;
     display: block;
-    margin-bottom: 5px;
+    border: 1px solid #333; /* Finito borde gris a la foto interna */
 }
 
+.img-caption {
+    font-family: 'Pacifico', cursive;
+    color: #d32f2f;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    transform: rotate(-2deg);
+    text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+}
+
+
+
+
 .esencia {
-    /* Usamos una fuente cursiva gruesa para que se note la mezcla de colores */
-    font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-    font-size: 1.3rem; /* Tamaño grande para que luzca */
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: 1.4rem;
     font-weight: normal;
     margin-top: 10px;
     display: inline-block;
-
-    /* --- PASO 1: Crear la mezcla de colores dentro del texto --- */
-    
-    /* Creamos un degradado horizontal suave: Dorado -> Morado -> Dorado */
-    background: linear-gradient(
-        to right, 
-        #FFD700 0%,   /* Empieza Dorado */
-        #d500f9 50%,  /* Se mezcla a Morado Neón en el centro */
-        #FFD700 100%  /* Termina Dorado */
-    );
-    
-    /* Recortamos el fondo con la forma del texto y hacemos el texto transparente */
+    background: linear-gradient(to right, #FFD700, #d500f9, #FFD700);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-
-    /* --- PASO 2: Crear el Resplandor Neón (Glow) --- */
-    
-    /* Usamos 'filter: drop-shadow' porque funciona mejor cuando el texto es transparente.
-       Creamos tres capas de luz para que brillen los dos colores combinados.
-    */
-    filter: 
-        /* Capa 1: Brillo blanco intenso pegado al texto (el "calor" del neón) */
-        drop-shadow(0 0 px rgba(255, 255, 255, 0.8))
-        /* Capa 2: Un halo dorado medio */
-        drop-shadow(0 0 5px rgba(255, 215, 0, 0.6))
-        /* Capa 3: Un resplandor morado más amplio para el ambiente */
-        drop-shadow(0 0 15px rgba(213, 0, 249, 0.5));
+    filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
 }
-/* Responsive: En celular quitamos el flotado para que se vea bien */
-@media (max-width: 600px) {
-    .floating-img-wrapper {
-        float: none;
-        margin: 0 auto 20px auto;
-        width: 100%;
-        max-width: 280px;
-    }
+.body-text-flow {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #333;
+    text-align: justify;
 }
 
-/* Botón Regresar */
+.body-text-flow p { margin-bottom: 15px; }
+
+.footer-text {
+    font-family: 'Pacifico', cursive;
+    color: #e91e63;
+    margin-top: 30px;
+    font-size: 1.2rem;
+}
+
 .back-btn {
     margin-top: 30px;
     padding: 10px 25px;
-    background-color: #f8f8f8;
-    color: #888;
-    border: 1px solid #ddd;
+    background-color: #fff;
+    color: #d32f2f;
+    border: 1px solid #d32f2f;
     border-radius: 20px;
     cursor: pointer;
     font-family: 'Poppins', sans-serif;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
 }
 
-.back-btn:hover {
-    background-color: #ff69b4;
-    color: white;
-    border-color: #ff69b4;
-    transform: translateY(-2px);
+@media (max-width: 600px) {
+    .floating-img-wrapper {
+        float: none;
+        margin: 0 auto 25px auto; /* Centrado */
+        transform: rotate(0deg); /* En celular que empiece derecho */
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    /* En celular, el movimiento al tocar será un leve zoom */
+    .photo-frame:active {
+        transform: scale(1.05);
+    }
 }
