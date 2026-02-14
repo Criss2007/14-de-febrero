@@ -1,109 +1,176 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const envelope = document.querySelector('.envelope');
-    const btnOpen = document.getElementById('openBtn');
-    const btnBack = document.getElementById('goBackBtn');
+document.addEventListener("DOMContentLoaded", function() {
     
-    // Pantallas
+    // --- ELEMENTOS ---
     const envelopeScreen = document.getElementById('envelopeScreen');
     const letterScreen = document.getElementById('letterScreen');
+    const openBtn = document.getElementById('openBtn');
+    const goBackBtn = document.getElementById('goBackBtn');
     
-    // Medios
-    const bgMusic = document.getElementById('bgMusic');
-    const bgVideo = document.getElementById('bgVideo');
+    // Elemento del sobre para animarlo
+    const envelope = document.querySelector('.envelope');
 
-    // --- ABRIR CARTA ---
-    btnOpen.addEventListener('click', () => {
-        // 1. Animación del sobre
-        envelope.classList.add('open');
-        btnOpen.style.display = 'none';
+    // VIDEOS
+    const bgVideo = document.getElementById('bgVideo');         
+    const videoEnvelope = document.getElementById('videoEnvelope'); 
+    
+    // --- AUDIOS ---
+    const audioSobre = document.getElementById('audioSobre'); 
+    const audioCarta = document.getElementById('audioCarta'); 
 
-        // 2. Intentar reproducir música (con manejo de error)
-        if(bgMusic) {
-            bgMusic.volume = 0.5;
-            // Promesa de play para evitar que bloquee el código si falla
-            let playPromise = bgMusic.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    console.log("El audio no pudo reproducirse automáticamente (posiblemente bloqueado por navegador):", error);
-                    // No detenemos el resto del código
+    // Variables confeti
+    let confetiInterval = null; 
+    let stopConfetiTimeout = null; 
+
+    // Configuración inicial
+    audioSobre.volume = 0.5;
+    audioCarta.volume = 1.0;
+
+    // Reproducción inicial segura
+    if (videoEnvelope) videoEnvelope.play().catch(e => console.log("Auto-play video prevent", e));
+
+    let playPromise = audioSobre.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(() => {
+            console.log("Esperando interacción.");
+        });
+    }
+
+    document.body.addEventListener('click', function() {
+        if (!envelopeScreen.classList.contains('hidden')) {
+            if (audioSobre.paused) audioSobre.play();
+            if (videoEnvelope.paused) videoEnvelope.play();
+        }
+    }, { once: true });
+
+
+    // --- BOTÓN: ABRIR EL SOBRE (CON ANIMACIÓN PREVIA) ---
+    openBtn.addEventListener('click', () => {
+        
+        // 1. PRIMERO: Activamos la animación visual del sobre
+        envelope.classList.add('open'); 
+        openBtn.classList.add('fade-out'); // Desaparecemos el botón suavemente
+
+        // 2. SEGUNDO: Esperamos 1.5 segundos para ver la animación
+        setTimeout(() => {
+            
+            // --- AQUI EMPIEZA LA TRANSICIÓN DE PANTALLA ---
+            
+            // A) LANZAR CONFETI
+            lanzarConfeti(); 
+
+            // B) CAMBIO DE PANTALLA
+            envelopeScreen.classList.add('hidden');
+            letterScreen.classList.remove('hidden');
+
+            // C) EFECTO PANTALLA NEGRA (CINEMA)
+            let overlay = document.createElement('div');
+            overlay.classList.add('cinema-fade'); 
+            document.body.appendChild(overlay);
+            setTimeout(() => { overlay.remove(); }, 3000);
+
+            // D) CAMBIO DE AUDIO
+            audioSobre.pause();
+            audioSobre.currentTime = 0; 
+            
+            audioCarta.currentTime = 0;
+            audioCarta.play().catch(e => console.log("Error audio carta:", e));
+
+            // E) GESTIÓN DE VIDEOS
+            if (videoEnvelope) videoEnvelope.pause();
+            if (bgVideo) bgVideo.play();
+
+        }, 1500); // <--- ESTOS SON LOS 1.5 SEGUNDOS DE ESPERA
+    });
+
+
+    // --- BOTÓN: VOLVER AL SOBRE ---
+    goBackBtn.addEventListener('click', () => {
+        // RESETEAR ANIMACIÓN DEL SOBRE
+        envelope.classList.remove('open');
+        openBtn.classList.remove('fade-out');
+
+        // AUDIO
+        audioCarta.pause();
+        audioSobre.play().catch(e => console.log("Error audio sobre:", e));
+
+        // VISUAL
+        limpiarConfeti();
+        letterScreen.classList.add('hidden');
+        envelopeScreen.classList.remove('hidden');
+
+        // VIDEOS
+        if (bgVideo) {
+            bgVideo.pause();
+            bgVideo.currentTime = 0;
+        }
+        if (videoEnvelope) {
+            videoEnvelope.play();
+        }
+    });
+
+    // --- FUNCIONES DE CONFETI (IGUAL QUE ANTES) ---
+    function limpiarConfeti() {
+        if (confetiInterval) {
+            clearInterval(confetiInterval);
+            confetiInterval = null;
+        }
+        if (stopConfetiTimeout) {
+            clearTimeout(stopConfetiTimeout);
+            stopConfetiTimeout = null;
+        }
+        if (typeof confetti !== 'undefined') {
+            confetti.reset();
+        }
+    }
+
+    function lanzarConfeti() {
+        if (typeof confetti === 'undefined') return;
+        limpiarConfeti();
+        
+        confetti({
+            particleCount: 100,
+            spread: 100,
+            origin: { y: 0.6 },
+            colors: ['#ff69b4', '#ff0000', '#ffffff'],
+            zIndex: 10001
+        });
+
+        confetiInterval = setInterval(function() {
+            confetti({
+                particleCount: 6, 
+                angle: 60,
+                spread: 55,
+                origin: { x: 0, y: 0.8 },
+                colors: ['#ff69b4', '#ffc0cb'],
+                zIndex: 10001
+            });
+            confetti({
+                particleCount: 6, 
+                angle: 120,
+                spread: 55,
+                origin: { x: 1, y: 0.8 },
+                colors: ['#ff69b4', '#ffc0cb'],
+                zIndex: 10001
+            });
+
+            if(Math.random() > 0.8) { 
+                confetti({
+                    particleCount: 1,
+                    shapes: ['text'],
+                    shapeOptions: { text: { value: '🌹' } },
+                    origin: { x: Math.random(), y: -0.1 }, 
+                    gravity: 0.7,
+                    scalar: 2, 
+                    zIndex: 10001
                 });
             }
-        }
+        }, 600); 
 
-        // 3. Confeti
-        launchConfetti();
-
-        // 4. Transición a la carta y video
-        setTimeout(() => {
-            // Desvanecer sobre
-            envelopeScreen.style.opacity = '0';
-            
-            setTimeout(() => {
-                // Ocultar pantalla sobre
-                envelopeScreen.style.display = 'none';
-                
-                // Mostrar pantalla carta
-                letterScreen.classList.remove('hidden');
-                
-                // Forzar un pequeño reflow para que la transición CSS funcione
-                void letterScreen.offsetWidth; 
-                
-                // Hacer visible la carta (fade in)
-                letterScreen.classList.add('show');
-                
-                // 5. Reproducir Video
-                if (bgVideo) {
-                    bgVideo.muted = true; // Asegurar silencio para autoplay
-                    bgVideo.currentTime = 0;
-                    bgVideo.play().catch(e => console.log("Error video:", e));
-                }
-
-            }, 1000); // Tiempo para que desaparezca el sobre
-        }, 1500); // Tiempo de espera con el sobre abierto
-    });
-
-    // --- REGRESAR ---
-    btnBack.addEventListener('click', () => {
-        // 1. Ocultar carta
-        letterScreen.classList.remove('show');
-        
-        // Esperar a que se desvanezca antes de ocultar
-        setTimeout(() => {
-            letterScreen.classList.add('hidden');
-            
-            // Pausar video
-            if (bgVideo) bgVideo.pause();
-
-            // 2. Mostrar sobre
-            envelopeScreen.style.display = 'flex';
-            // Pequeño delay para el fade in
-            setTimeout(() => {
-                envelopeScreen.style.opacity = '1';
-            }, 50);
-
-            // Resetear sobre
-            envelope.classList.remove('open');
-            btnOpen.style.display = 'block';
-
-            // Pausar música
-            if(bgMusic) {
-                bgMusic.pause();
-                bgMusic.currentTime = 0;
+        stopConfetiTimeout = setTimeout(() => {
+            if (confetiInterval) {
+                clearInterval(confetiInterval);
+                confetiInterval = null;
             }
-        }, 500); // Tiempo igual a la transición CSS
-    });
+        }, 24000); 
+    }
 });
-
-// Confeti
-function launchConfetti() {
-    var duration = 3000;
-    var animationEnd = Date.now() + duration;
-    var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-    var interval = setInterval(function() {
-        var timeLeft = animationEnd - Date.now();
-        if (timeLeft <= 0) return clearInterval(interval);
-        var particleCount = 50 * (timeLeft / duration);
-        confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random(), y: Math.random() - 0.2 } }));
-    }, 250);
-}

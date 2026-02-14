@@ -11,13 +11,14 @@
 body {
     height: 100vh;
     width: 100%;
-    /* Fondo temporal por si el video tarda en cargar */
     background: #000; 
     font-family: 'Poppins', sans-serif;
     overflow: hidden; 
 }
 
-/* --- VIDEO DE FONDO (CRUCIAL) --- */
+/* --- VIDEOS DE FONDO --- */
+
+/* Video Pantalla 2 (Carta) */
 .video-background {
     position: fixed;
     top: 0;
@@ -25,37 +26,61 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: -1; /* SIEMPRE ATRÁS */
+    z-index: -1; 
+}
+
+/* Video Pantalla 1 (Sobre) */
+.video-bg-envelope {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1; 
 }
 
 /* --- PANTALLA 1: EL SOBRE --- */
 .envelope-container {
     height: 100vh;
     width: 100%;
-    background-image: linear-gradient(to top, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); /* Fondo solo para el sobre */
+    background: transparent; 
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    position: absolute;
+    border: 3px darkblue dashed;
+    position: absolute; 
     top: 0;
     left: 0;
-    z-index: 50; /* Por encima del video */
+    z-index: 50; 
     transition: opacity 1s ease;
+    overflow: hidden; 
 }
 
+.content-flex {
+    position: relative;
+    z-index: 2; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* --- ESTILOS DEL SOBRE Y ANIMACIÓN --- */
 .envelope-wrapper {
     background: #f7f7f7;
     height: 200px;
     width: 300px;
     position: relative;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
+    z-index: 5; 
 }
 
 .envelope {
     position: relative;
     height: 100%;
     width: 100%;
+    transform-style: preserve-3d; /* IMPORTANTE PARA EL GIRO 3D */
 }
 
 .envelope::before { 
@@ -77,17 +102,26 @@ body {
     z-index: 4;
 }
 
+/* La tapa del sobre */
 .flap {
     border-left: 150px solid transparent;
     border-right: 150px solid transparent;
-    border-top: 130px solid #ff4d88;
+    border-top: 130px solid #ff4d88; /* Aquí está el color ROSA de la tapa */
+    position: absolute; /* Aseguramos que se quede arriba fijo */
     top: 0;
     left: 0;
     transform-origin: top;
-    transition: transform 0.6s ease-in-out, z-index 0.4s;
-    z-index: 6;
+    z-index: 6; /* Comienza ENCIMA de todo */
+    /* 
+       TRUCO PARA QUE NO REBOTE:
+       La transición del z-index tiene un delay de 0.3s.
+       Esto hace que cambie de capa justo cuando la tapa va por la mitad (90 grados),
+       así no atraviesa la carta visualmente.
+    */
+    transition: transform 0.6s ease-in-out, z-index 0.1s 0.3s;
 }
 
+/* El bolsillo frontal */
 .pocket {
     border-left: 150px solid #ff69b4;
     border-right: 150px solid #ff69b4;
@@ -98,23 +132,27 @@ body {
     z-index: 5;
 }
 
+/* LA CARTA DE ADENTRO */
 .letter {
     position: absolute;
-    background: #fff;
+    background: rgba(255, 255, 255, 0.85); 
     width: 90%;
     height: 90%;
     top: 5%;
     left: 5%;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(240, 16, 16, 0.1);
-    z-index: 3;
-    border: red 5px dashed;
-    transition: transform 0.6s ease-in-out;
+    z-index: 3; /* Debajo de la tapa cerrada, pero encima del fondo */
+    border: 10px dashed rgb(255, 0, 0); 
+    
+    /* La carta espera 0.6s (que termine de abrirse el sobre) antes de subir */
+    transition: transform 0.8s 0.2s ease-in-out;
+    
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
-}
+}s
 
 .text {
     font-family: Georgia, serif;
@@ -132,8 +170,23 @@ body {
     text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
-.open .flap { transform: rotateX(180deg); z-index: 1; }
-.open .letter { transform: translateY(-100px); z-index: 7; }
+/* ACCIONES DE APERTURA (Controladas por el JS) */
+.open .flap { 
+    transform: rotateX(180deg); 
+    z-index: 1; /* Al abrirse, se va al fondo para que salga la carta */
+}
+
+.open .letter { 
+    transform: translateY(-100px); 
+    z-index: 4; /* Al subir, se asegura de estar encima de todo */
+}
+
+/* CLASE PARA DESVANECER EL BOTÓN SUAVEMENTE */
+.fade-out {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+}
 
 .open-btn {
     margin-top: 50px;
@@ -147,6 +200,7 @@ body {
     box-shadow: 0 5px 15px rgba(211, 47, 47, 0.4);
     font-family: 'Poppins', sans-serif;
     z-index: 10;
+    transition: opacity 0.3s ease; /* Permite el desvanecimiento */
 }
 
 /* --- PANTALLA 2: LA CARTA --- */
@@ -161,18 +215,11 @@ body {
     padding: 20px;
     overflow-y: auto;
     position: relative;
-    z-index: 10; /* Encima del video */
-    opacity: 0;
-    transition: opacity 1s ease-in; /* Transición suave */
-}
-
-/* Cuando JS agregue esta clase, la carta aparecerá */
-.letter-container.show {
-    opacity: 1;
+    z-index: 10; 
+    opacity: 1; 
 }
 
 .paper {
-    /* FONDO BLANCO SEMITRANSPARENTE PARA QUE SE VEA EL VIDEO DETRÁS */
     background: rgba(255, 255, 255, 0.85); 
     width: 100%;
     max-width: 650px;
@@ -184,7 +231,32 @@ body {
     border: 2px solid #ffc0cb;
     margin-top: 20px;
     margin-bottom: 50px;
-    backdrop-filter: blur(2px); /* Efecto vidrio opcional */
+    backdrop-filter: blur(2px); 
+}
+
+/* --- FOTO LATERAL Y RESPONSIVE --- */
+.foto-lateral {
+    margin-left: 20px; 
+    width: 250px; 
+    height: auto;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    z-index: 10;
+}
+
+@media (max-width: 768px) {
+    .content-flex {
+        flex-direction: column-reverse; 
+    }
+    .foto-lateral {
+        margin-left: 0;
+        margin-bottom: 20px;
+        width: 80%; 
+        max-width: 200px;
+    }
+    .envelope-container {
+        height: 100vh;
+    }
 }
 
 .paper::before {
@@ -196,7 +268,6 @@ body {
     pointer-events: none;
 }
 
-/* ESTILOS DE TEXTO */
 .title {
     font-family: 'Pacifico', cursive;
     font-size: 2.5rem;
@@ -219,45 +290,31 @@ body {
     position: relative;
 }
 
-/* CONTENEDOR DE LA IMAGEN FLOTANTE */
 .floating-img-wrapper {
-    float: right; /* Flota a la derecha */
+    float: right; 
     margin-left: 25px;
     margin-bottom: 15px;
-    width: 280px; /* Un poquito más grande */
+    width: 280px; 
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative; 
-    z-index: 100; /* ¡IMPORTANTE! Esto asegura que la foto esté ENCIMA y reaccione al toque */
+    z-index: 100; 
 }
 
-/* EL MARCO DE LA FOTO (La parte negra) */
 .photo-frame {
     background-color: #000;
-    padding: 12px; /* Marco un poco más grueso */
-    /* Sombra inicial suave */
+    padding: 12px; 
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    
-    /* Estado inicial: Rotado */
     transform: rotate(4deg);
-    
-    /* Animación suave tipo rebote */
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    
     width: 100%;
-    cursor: pointer; /* Muestra la manito para indicar que se puede tocar */
+    cursor: pointer; 
 }
 
-/* --- EL MOVIMIENTO AL TOCAR O PASAR EL MOUSE --- */
 .photo-frame:hover {
-    /* Se endereza (0deg), crece un poco (scale 1.05) y sube (-5px) */
     transform: scale(1.05) rotate(0deg) translateY(-5px);
-    
-    /* La sombra se hace más intensa para dar efecto 3D */
     box-shadow: 0 15px 30px rgba(0,0,0,0.5);
-    
-    /* Cambiamos el borde a rosa intenso al tocar */
     background-color: #1a1a1a;
 }
 
@@ -265,7 +322,7 @@ body {
     width: 100%;
     height: auto;
     display: block;
-    border: 1px solid #333; /* Finito borde gris a la foto interna */
+    border: 1px solid #333; 
 }
 
 .img-caption {
@@ -276,9 +333,6 @@ body {
     transform: rotate(-2deg);
     text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
 }
-
-
-
 
 .esencia {
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
@@ -292,6 +346,7 @@ body {
     color: transparent;
     filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
 }
+
 .body-text-flow {
     font-family: 'Poppins', sans-serif;
     font-size: 0.95rem;
@@ -323,14 +378,31 @@ body {
 @media (max-width: 600px) {
     .floating-img-wrapper {
         float: none;
-        margin: 0 auto 25px auto; /* Centrado */
-        transform: rotate(0deg); /* En celular que empiece derecho */
+        margin: 0 auto 25px auto; 
+        transform: rotate(0deg); 
         width: 100%;
         max-width: 300px;
     }
     
-    /* En celular, el movimiento al tocar será un leve zoom */
     .photo-frame:active {
         transform: scale(1.05);
     }
+}
+
+.cinema-fade {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index: 9999; 
+    pointer-events: none; 
+    animation: fadeOutEffect 2.8s ease-out forwards; 
+}
+
+@keyframes fadeOutEffect {
+    0% { background-color: black; opacity: 1; }
+    30% { background-color: black; opacity: 1; }
+    100% { background-color: transparent; opacity: 0; }
 }

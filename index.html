@@ -14,32 +14,42 @@
 </head>
 <body>
 
-    <!-- PANTALLA 1: EL SOBRE -->
+    <!-- PANTALLA 1: EL SOBRE + FONDO ANIMACIÓN -->
     <div class="envelope-container" id="envelopeScreen">
-        <div class="envelope-wrapper">
-            <div class="envelope">
-                <div class="front flap"></div>
-                <div class="front pocket"></div>
-                <div class="letter">
-                    <div class="text">
-                        <strong> De:</strong> Cristofer<br>
-                        <strong>Para:</strong> Esencia Ardiente
+        
+        <!-- AQUI ESTÁ EL NUEVO FONDO DE VIDEO (animación.mp4) -->
+        <video id="videoEnvelope" class="video-bg-envelope" src="animación.mp4" autoplay loop muted playsinline></video>
+
+        <div class="content-flex"> 
+            <div class="envelope-wrapper">
+                <div class="envelope">
+                    <div class="front flap"></div>
+                    <div class="front pocket"></div>
+                    <div class="letter">
+                        <div class="text">
+                            <strong>De:</strong> Cristofer<br>
+                            <strong>Para:</strong> Esencia Ardiente
+                        </div>
+                    </div>
+                    <div class="hearts">
+                        <div class="heart a1"></div>
+                        <div class="heart a2"></div>
+                        <div class="heart a3"></div>
                     </div>
                 </div>
-                <div class="hearts">
-                    <div class="heart a1"></div>
-                    <div class="heart a2"></div>
-                    <div class="heart a3"></div>
-                </div>
             </div>
+            
+            <!-- Foto al lado del sobre -->
+            <img src="esencia.jpg" alt="Nuestra Foto" class="foto-lateral">        
         </div>
+
         <button id="openBtn" class="open-btn">¡Toca para abrir! 💌</button>
     </div>
 
-    <!-- PANTALLA 2: LA CARTA FINAL + VIDEO -->
+    <!-- PANTALLA 2: LA CARTA FINAL + FONDO VIDEO -->
     <div class="letter-container hidden" id="letterScreen">
         
-        <!-- VIDEO DE FONDO -->
+        <!-- VIDEO DE FONDO SEGUNDA PANTALLA (fondo.mp4) -->
         <video id="bgVideo" class="video-background" src="fondo.mp4" loop muted playsinline></video>
 
         <!-- EL PAPEL DE LA CARTA -->
@@ -51,7 +61,7 @@
             
             <div class="content-wrapper">
                 
-                <!-- FOTO -->
+                <!-- FOTO FLOTANTE -->
                 <div class="floating-img-wrapper">
                     <p class="img-caption">Un recuerdo inolvidable ✨</p>
                     <div class="photo-frame">
@@ -87,8 +97,12 @@
         </div>
     </div>
 
-    <!-- AUDIO -->
-    <audio id="bgMusic" loop>
+    <!-- AUDIOS -->
+    <audio id="audioSobre" loop>
+        <source src="instrumental.mp3" type="audio/mp3">
+    </audio>
+
+    <audio id="audioCarta" loop>
         <source src="Perfect.mp3" type="audio/mp3">
     </audio>
 
